@@ -17,7 +17,6 @@ package uf2loader;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.util.*;
 
 import ghidra.app.util.MemoryBlockUtils;
@@ -36,9 +35,12 @@ import ghidra.program.model.address.AddressOverflowException;
 import ghidra.program.model.lang.LanguageCompilerSpecPair;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.Memory;
+import ghidra.program.model.mem.MemoryBlock;
+import ghidra.program.model.mem.MemoryBlockException;
 import ghidra.program.model.mem.MemoryConflictException;
 import ghidra.util.Msg;
 import ghidra.util.exception.CancelledException;
+import ghidra.util.exception.NotFoundException;
 import ghidra.util.task.TaskMonitor;
 
 /**
@@ -141,6 +143,7 @@ public class uf2loaderLoader extends AbstractLibrarySupportLoader {
 		
 		long num_blocks = provider.length();
 		var addressSpace = program.getAddressFactory().getDefaultAddressSpace();
+		MemoryBlock previousBlock = null;
 		
 		for (long blockNumber = 0; blockNumber < (num_blocks / UF2_BLOCK_SIZE); blockNumber++) {
 			Msg.info(this, "reading block[" + Long.toHexString(blockNumber) + "]");
@@ -151,8 +154,16 @@ public class uf2loaderLoader extends AbstractLibrarySupportLoader {
 			String name = "block_" + Long.toUnsignedString(m_blockNo, 16);
 			try {
 				in.skip(offset);
-				mem.createInitializedBlock(name, addressSpace.getAddress(m_targetAddr),
+				MemoryBlock newBlock = mem.createInitializedBlock(name, addressSpace.getAddress(m_targetAddr),
 						in, m_payloadSize, monitor, false);
+				if (previousBlock != null) {
+					MemoryBlock tmp;
+					tmp = mem.join(previousBlock, newBlock);
+					previousBlock = tmp;
+				} else {
+					previousBlock = newBlock;
+				}
+				// TODO: there's probably a better way to handle this, but my bourbon thinks it's fine.
 				in.skip(UF2_BLOCK_SIZE - offset - m_payloadSize);
 
 			} catch (LockException e) {
@@ -170,7 +181,10 @@ public class uf2loaderLoader extends AbstractLibrarySupportLoader {
 			} catch (AddressOutOfBoundsException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} 
+			} catch (MemoryBlockException | NotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 		    //printUF2Block();
 		}
