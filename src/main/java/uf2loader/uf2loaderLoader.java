@@ -51,7 +51,7 @@ import ghidra.util.task.TaskMonitor;
 public class uf2loaderLoader extends AbstractLibrarySupportLoader {
 	public static final long UF2_BLOCK_SIZE = 0x200;
 	public static final long UF2_FIRST_MAGIC = 0x0A324655;
-	public static final long UF2_SECOND_MAGIC = 0x9E5D5157;
+	public static final long UF2_SECOND_MAGIC = 0x9E5D5157L;
 	public static final long UF2_FINAL_MAGIC = 0x0AB16F30;
 	public static final long UF2_DATA_BLOCK_SIZE = 0x1dc; // 476
 	
