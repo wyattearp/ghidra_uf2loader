@@ -28,6 +28,7 @@ import ghidra.app.util.bin.ByteProvider;
 import ghidra.app.util.bin.FileBytesProvider;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.app.util.opinion.AbstractLibrarySupportLoader;
+import ghidra.app.util.opinion.Loader.ImporterSettings;
 import ghidra.app.util.opinion.LoadSpec;
 import ghidra.framework.model.DomainObject;
 import ghidra.framework.store.LockException;
@@ -177,9 +178,8 @@ public class uf2loaderLoader extends AbstractLibrarySupportLoader {
 	}
 
 	@Override
-	protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options, Program program,
-			TaskMonitor monitor, MessageLog log) throws CancelledException, IOException {
-
+	protected void load(Program program, ImporterSettings settings) throws CancelledException, IOException {
+		ByteProvider provider = settings.provider();
 		BinaryReader br = new BinaryReader(provider, true);
 		InputStream in = provider.getInputStream(0);
 		Memory mem = program.getMemory();
@@ -199,7 +199,7 @@ public class uf2loaderLoader extends AbstractLibrarySupportLoader {
 			try {
 				in.skip(offset);
 				MemoryBlock newBlock = mem.createInitializedBlock(name, addressSpace.getAddress(m_targetAddr), in,
-						m_payloadSize, monitor, false);
+						m_payloadSize, settings.monitor(), false);
 				if (previousBlock != null) {
 					MemoryBlock tmp;
 					tmp = mem.join(previousBlock, newBlock);
@@ -226,7 +226,7 @@ public class uf2loaderLoader extends AbstractLibrarySupportLoader {
 			} catch (AddressOutOfBoundsException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} catch (MemoryBlockException | NotFoundException e) {
+			} catch (MemoryBlockException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -237,8 +237,9 @@ public class uf2loaderLoader extends AbstractLibrarySupportLoader {
 
 	@Override
 	public List<Option> getDefaultOptions(ByteProvider provider, LoadSpec loadSpec, DomainObject domainObject,
-			boolean isLoadIntoProgram) {
-		List<Option> list = super.getDefaultOptions(provider, loadSpec, domainObject, isLoadIntoProgram);
+			boolean isLoadIntoProgram, boolean mirrorFsLayout) {
+		List<Option> list = super.getDefaultOptions(provider, loadSpec, domainObject, isLoadIntoProgram,
+				mirrorFsLayout);
 
 		// TODO: If this loader has custom options, add them to 'list'
 		list.add(new Option("Option name goes here", "Default option value goes here"));
