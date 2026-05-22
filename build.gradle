@@ -46,3 +46,13 @@ else {
 	throw new GradleException("GHIDRA_INSTALL_DIR is not defined!")
 }
 //----------------------END "DO NOT MODIFY" SECTION-------------------------------
+
+buildExtension {
+	exclude ".ghidra_cache/**"
+	exclude "dist/**"
+	exclude "tests/**"
+	exclude "scripts/**"
+	exclude ".git/**"
+	exclude ".github/**"
+	exclude ".gradle/**"
+}

@@ -1,0 +1,26 @@
+/* Default Style for Ghidra Help */
+BODY {
+    font-family: sans-serif;
+    margin-left: 10pt;
+    margin-right: 10pt;
+}
+
+H1 {
+    font-size: 18pt;
+    font-weight: bold;
+    color: #000080;
+}
+
+H2 {
+    font-size: 14pt;
+    font-weight: bold;
+    color: #000080;
+}
+
+P {
+    font-size: 10pt;
+}
+
+LI {
+    font-size: 10pt;
+}

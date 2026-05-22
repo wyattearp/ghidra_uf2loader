@@ -1,23 +1,34 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-
 <HTML>
-  <HEAD>
-    <META name="generator" content=
-    "HTML Tidy for Java (vers. 2009-12-01), see jtidy.sourceforge.net">
-    <META http-equiv="Content-Language" content="en-us">
-    <META http-equiv="Content-Type" content="text/html; charset=windows-1252">
-    <META name="GENERATOR" content="Microsoft FrontPage 4.0">
-    <META name="ProgId" content="FrontPage.Editor.Document">
+<HEAD>
+    <TITLE>UF2 Loader Help</TITLE>
+    <LINK rel="stylesheet" type="text/css" href="help/shared/DefaultStyle.css">
+</HEAD>
+<BODY>
+    <H1><A name="uf2_loader_top"></A>UF2 Loader</H1>
 
-    <TITLE>Skeleton Help File for a Module</TITLE>
-    <LINK rel="stylesheet" type="text/css" href="../../shared/Frontpage.css">
-  </HEAD>
+    <P>The UF2 Loader extension allows Ghidra to import Microsoft's USB Flashing Format (UF2) files.</P>
 
-  <BODY>
-    <H1><a name="HelpAnchor"></a>Skeleton Help File for a Module</H1>
+    <H2><A name="uf2_overview"></A>Overview</H2>
+    <P>UF2 is a file format designed for flashing microcontrollers over MSC (Mass Storage Class). 
+    It consists of 512-byte blocks, each containing a header, 256 or 476 bytes of data, and magic numbers.</P>
 
-    <P>This is a simple skeleton help topic. For a better description of what should and should not
-    go in here, see the "sample" Ghidra extension in the Extensions/Ghidra directory, or see your 
-    favorite help topic. In general, language modules do not have their own help topics.</P>
-  </BODY>
+    <P>This loader automatically:</P>
+    <UL>
+        <LI>Identifies the target board/architecture using the Family ID.</LI>
+        <LI>Maps data blocks to their target addresses in memory.</LI>
+        <LI>Merges contiguous blocks into single memory segments for easier analysis.</LI>
+        <LI>Uses <CODE>FileBytes</CODE> to maintain a backlink to the original file data.</LI>
+    </UL>
+
+    <H2><A name="uf2_architectures"></A>Supported Architectures</H2>
+    <P>The loader currently supports the following architectures based on Family ID:</P>
+    <UL>
+        <LI>ARM Cortex (RP2040, STM32, SAMD, etc.)</LI>
+        <LI>Xtensa (ESP32, ESP8266)</LI>
+        <LI>RISC-V (ESP32-C3)</LI>
+        <LI>AVR8 (ATmega32)</LI>
+    </UL>
+
+</BODY>
 </HTML>
