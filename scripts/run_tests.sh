@@ -43,8 +43,8 @@ setup_ghidra() {
 build_extension() {
     setup_gradle
     setup_ghidra
-    echo "Building extension..."
-    "$GRADLE_BIN" -PGHIDRA_INSTALL_DIR="$GHIDRA_INSTALL_DIR" clean buildExtension
+    echo "Building extension with args: $@"
+    "$GRADLE_BIN" -PGHIDRA_INSTALL_DIR="$GHIDRA_INSTALL_DIR" "$@" clean buildExtension
 }
 
 run_tests() {
@@ -78,9 +78,10 @@ run_tests() {
 }
 
 COMMAND=$1
+shift
 case "$COMMAND" in
     setup) setup_gradle; setup_ghidra ;;
-    build) build_extension ;;
+    build) build_extension "$@" ;;
     test) run_tests ;;
     *) echo "Usage: $0 {setup|build|test}"; exit 1 ;;
 esac

@@ -32,38 +32,26 @@ jobs:
         path: .ghidra_cache
         key: ghidra-cache-${{ runner.os }}-${{ hashFiles('scripts/run_tests.sh') }}
 
-    - name: Run Java Build
-      run: |
-        echo "build here"
-        echo "unzip based install here"
-
-    - name: Run Tests
-      run: |
-        ./scripts/run_tests.sh tests/examples/bus_pirate5_rev8.uf2
-        ./scripts/run_tests.sh tests/examples/bus_pirate5_rev10.uf2
-        ./scripts/run_tests.sh tests/examples/.uf2
-
-    - name: Package Release
-      if: success()
+    - name: Build Extension
       run: |
         if [[ "${{ github.ref }}" == refs/tags/* ]]; then
           VERSION="${{ github.ref_name }}"
         else
           VERSION="$(echo ${{ github.sha }} | cut -c1-7)"
         fi
-        ZIP_NAME="ghidra-uf2-loader-${VERSION}.zip"
-        
-        mkdir -p release/ghidra-uf2-loader
-        cp -r ghidra_scripts release/ghidra-uf2-loader/
-        cp README.md release/ghidra-uf2-loader/
-        cp LICENSE release/ghidra-uf2-loader/
-        cd release
-        zip -r "${ZIP_NAME}" ghidra-uf2-loader/
-        echo "ZIP_NAME=${ZIP_NAME}" >> $GITHUB_ENV
+        sed -i "s/version=@extversion@/version=${VERSION}/" extension.properties
+        ./scripts/run_tests.sh build
+        # Rename the zip to include the version in the filename
+        ZIP_FILE=$(ls dist/*.zip)
+        mv "$ZIP_FILE" "${ZIP_FILE%.zip}_${VERSION}.zip"
+
+    - name: Run Tests
+      run: |
+        ./scripts/run_tests.sh test
 
     - name: Upload Artifact
       if: success()
       uses: actions/upload-artifact@v4
       with:
-        name: ghidra-uf2-loader-${{ env.GHIDRA_VERSION }}
-        path: release/${{ env.ZIP_NAME }}
+        name: ghidra-uf2-loader-extension
+        path: dist/*.zip
