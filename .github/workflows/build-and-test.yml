@@ -3,6 +3,7 @@ name: Build and Test Ghidra UF2 Loader
 on:
   push:
     branches: [ main ]
+    tags: [ 'v*' ]
   pull_request:
     branches: [ main ]
   workflow_dispatch:
@@ -10,6 +11,8 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     
     steps:
     - name: Checkout code
@@ -39,7 +42,10 @@ jobs:
         else
           VERSION="$(echo ${{ github.sha }} | cut -c1-7)"
         fi
+        # Replace placeholders in extension.properties
+        sed -i "s/name=@extname@/name=ghidra_uf2loader/" extension.properties
         sed -i "s/version=@extversion@/version=${VERSION}/" extension.properties
+        
         ./scripts/run_tests.sh build
         # Rename the zip to include the version in the filename
         ZIP_FILE=$(ls dist/*.zip)
@@ -55,3 +61,12 @@ jobs:
       with:
         name: ghidra-uf2-loader-extension
         path: dist/*.zip
+
+    - name: Create Release
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v2
+      with:
+        files: dist/*.zip
+        generate_release_notes: true
+        draft: false
+        prerelease: false
