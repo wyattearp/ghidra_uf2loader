@@ -1,4 +1,6 @@
 import ghidra.app.script.GhidraScript;
+import ghidra.program.model.address.Address;
+import ghidra.program.model.address.AddressIterator;
 import ghidra.program.model.mem.Memory;
 import ghidra.program.model.mem.MemoryBlock;
 
@@ -22,6 +24,14 @@ public class VerifyUF2Import extends GhidraScript {
             println("VERIFICATION_SUCCESS: Found flash block at 0x10000000");
         } else {
             println("VERIFICATION_FAILURE: No block found at 0x10000000");
+        }
+
+        AddressIterator entryPoints = currentProgram.getSymbolTable().getExternalEntryPointIterator();
+        if (entryPoints.hasNext()) {
+            println("Found entry point at: " + entryPoints.next());
+            println("VERIFICATION_SUCCESS: Entry point detected");
+        } else {
+            println("VERIFICATION_FAILURE: No entry point detected");
         }
     }
 }

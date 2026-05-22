@@ -60,8 +60,9 @@ run_tests() {
 
     echo "Installing extension $EXT_ZIP into $GHIDRA_INSTALL_DIR..."
     mkdir -p "$GHIDRA_INSTALL_DIR/Ghidra/Extensions"
-    # Remove existing extension if any
+    # Remove existing extension if any (both in install and user config to avoid collisions)
     rm -rf "$GHIDRA_INSTALL_DIR/Ghidra/Extensions/ghidra_uf2loader"
+    rm -rf "$HOME/.config/ghidra/ghidra_12.1_PUBLIC/Extensions/ghidra_uf2loader"
     unzip -o "$EXT_ZIP" -d "$GHIDRA_INSTALL_DIR/Ghidra/Extensions"
 
     # Run headless Ghidra to import UF2 and run verification script
