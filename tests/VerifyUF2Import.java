@@ -13,6 +13,8 @@ public class VerifyUF2Import extends GhidraScript {
         println("Number of memory blocks: " + blocks.length);
         
         boolean foundFlash = false;
+        // NOTE: this is only accurate for the buspirate files because i could validate the elfs
+        // your mileage may vary if you just pick some random uf2 file
         for (MemoryBlock block : blocks) {
             println("Block: " + block.getName() + " [" + block.getStart() + " - " + block.getEnd() + "]");
             if (block.getStart().getOffset() == 0x10000000L) {
